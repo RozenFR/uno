@@ -1,8 +1,7 @@
+package test;
+
 import cardset.CardException;
-import cardset.card.CardNumber;
-import cardset.card.ECardColor;
-import cardset.card.ICard;
-import cardset.card.Skip;
+import cardset.card.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -449,7 +448,36 @@ public class UnoTest {
 
         @Test
         public void IllegalMoveWithSimpleCardOnSkip() {
-            // TODO
+            if (!game.getCurrentPlayer().equals(alice))
+                fail("Alice is not current player.");
+            System.out.println("Alice is current player.");
+
+            try {
+                alice.playCard(game, alice.getiCard(0));
+                System.out.println("Alice play her Skip Red.");
+                game.nextRound();
+                System.out.println("Alice end her round.");
+            } catch (UserException e) {
+                fail("Alice couldn't play her Skip Red.");
+            }
+
+            if (!game.getCurrentPlayer().equals(charles))
+                fail("Charles is not current player.");
+            System.out.println("Charles is current player.");
+
+            if (charles.getNbCard() != 3)
+                fail("Charles don't have 3 cards.");
+            System.out.println("Charles have 3 cards.");
+
+            try {
+                charles.playCard(game, charles.getiCard(0));
+                fail("Charles play his 1 Blue.");
+            } catch (UserException e) {
+                System.out.println("Charles couldn't play his 1 Blue.");
+                if (charles.getNbCard() != 3)
+                    fail("Charles don't have 3 cards.");
+                System.out.println("Charles have 3 cards.");
+            }
         }
 
         @Test
@@ -493,6 +521,260 @@ public class UnoTest {
                 if (charles.getNbCard() != 3)
                     fail("Charles don't have 3 cards");
                 System.out.println("Charles have 3 cards");
+            }
+        }
+    }
+
+    @Nested
+    class FourthTests {
+        @BeforeEach
+        public void init() {
+            game = new Game();
+
+            try {
+                FileProcess.readFile("external/JeuTestCartePlusTwo.csv", game.getDeck());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            game.addPlayer("Alice");
+            game.addPlayer("Bob");
+            game.addPlayer("Charles");
+            for (int i = 0; i < 3; i++) {
+                for (Player player : game.getPlayers()) {
+                    game.getDeck().giveCardToPlayerWithi(player, 1);
+                }
+            }
+            ICard cardDeck = game.getDeck().getCards().get(0);
+            game.getPile().addCard(cardDeck);
+            game.getDeck().removeCard(cardDeck);
+
+            alice = game.getPlayers().get(0);
+            bob = game.getPlayers().get(1);
+            charles = game.getPlayers().get(2);
+        }
+
+        @Test
+        public void LegalMoveWithPlusTwoTest() {
+            if (!game.getCurrentPlayer().equals(alice))
+                fail("Alice is not current player.");
+            System.out.println("Alice is current player.");
+
+            try {
+                alice.playCard(game, alice.getiCard(0));
+                System.out.println("Alice play +2 Green");
+                game.nextRound();
+                System.out.println("Alice end her round.");
+            } catch (UserException e) {
+                fail("Alice couldn't play her +2 Green.");
+            }
+
+            if (!game.getCurrentPlayer().equals(bob))
+                fail("Bob is not current player.");
+            System.out.println("Bob is current player.");
+
+            if (bob.getNbCard() != 3)
+                fail("Bob don't have 3 cards.");
+            System.out.println("Bob have 3 cards.");
+
+            try {
+                bob.playCard(game, new CardNumber(-1, ECardColor.None));
+                System.out.println("Bob is forced to picked 2 cards and end his round.");
+            } catch (UserException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (bob.getNbCard() != 5)
+                fail("Bob don't have 5 cards." + bob.getHand().toString());
+            System.out.println("Bob have 5 cards.");
+
+            if (!game.getCurrentPlayer().equals(charles))
+                fail("Charles is not current player.");
+            System.out.println("Charles is current player.");
+
+            try {
+                charles.playCard(game, charles.getiCard(2));
+                System.out.println("Charles play his 1 Green.");
+                game.nextRound();
+                System.out.println("Charles end his round.");
+            } catch (UserException e) {
+                fail("Charles couldn't play his 1 Green.");
+            }
+
+            if (charles.getNbCard() != 2)
+                fail("Charles don't have 2 cards.");
+            System.out.println("Charles have 2 cards.");
+
+        }
+
+        @Test
+        public void LegalMoveWithCumulOfPlusTwoTest() {
+            if(!game.getCurrentPlayer().equals(alice))
+                fail("Alice is not current player.");
+            System.out.println("Alice is current player.");
+
+            try {
+                game.getDeck().giveCardToPlayer(game, alice);
+                System.out.println("Alice picked a card from deck.");
+                game.nextRound();
+                System.out.println("Alice end her round.");
+            } catch (UserException e) {
+                fail("Alice didn't pick a card from deck.");
+            }
+
+            if (!game.getCurrentPlayer().equals(bob))
+                fail("Bob is not current player.");
+            System.out.println("Bob is current player.");
+
+            try {
+                game.getDeck().giveCardToPlayer(game, bob);
+                System.out.println("Bob picked a card.");
+                game.nextRound();
+                System.out.println("Bob end his round.");
+            } catch (UserException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (!game.getCurrentPlayer().equals(charles))
+                fail("Charles is not current player.");
+            System.out.println("Charles is current player.");
+
+            try {
+                charles.playCard(game, charles.getiCard(1));
+                System.out.println("Charles play his +2 Green.");
+                game.nextRound();
+                System.out.println("Charles end his round.");
+            } catch (UserException e) {
+                fail("Charles couldn't play his +2 Green.");
+            }
+
+            if (!game.getCurrentPlayer().equals(alice))
+                fail("Alice is not current player.");
+            System.out.println("Alice is current player.");
+
+            try {
+                alice.playCard(game, alice.getiCard(0));
+                System.out.println("Alice played her +2 Green.");
+                game.nextRound();
+            } catch (UserException e) {
+                fail("Alice couldn't play her +2 Green.");
+            }
+
+            if (!game.getCurrentPlayer().equals(bob))
+                fail("Bob is not current player.");
+            System.out.println("Bob is current player.");
+
+            if (bob.getNbCard() != 4)
+                fail("Bob don't have 4 cards.");
+            System.out.println("Bob have 4 cards.");
+
+            try {
+                bob.playCard(game, new CardNumber(-1, ECardColor.None));
+                System.out.println("Bob is forced to picked +4 cards and end his round.");
+            } catch (UserException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (bob.getNbCard() != 8)
+                fail("Bob don't have 8 cards.");
+            System.out.println("Bob have 8 cards.");
+
+            if (!game.getCurrentPlayer().equals(charles))
+                fail("Charles is not current player.");
+            System.out.println("Charles is current player.");
+
+        }
+    }
+
+    @Nested
+    class FifthTests {
+        @BeforeEach
+        public void init() {
+            game = new Game();
+
+            try {
+                FileProcess.readFile("external/JeuTestCarteCouleur.csv", game.getDeck());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            game.addPlayer("Alice");
+            game.addPlayer("Bob");
+            game.addPlayer("Charles");
+            for (int i = 0; i < 3; i++) {
+                for (Player player : game.getPlayers()) {
+                    game.getDeck().giveCardToPlayerWithi(player, 1);
+                }
+            }
+            ICard cardDeck = game.getDeck().getCards().get(0);
+            game.getPile().addCard(cardDeck);
+            game.getDeck().removeCard(cardDeck);
+
+            alice = game.getPlayers().get(0);
+            bob = game.getPlayers().get(1);
+            charles = game.getPlayers().get(2);
+        }
+
+        @Test
+        public void LegalMoveWithChangeColor() {
+            if (!game.getCurrentPlayer().equals(alice))
+                fail("Alice is not current player.");
+            System.out.println("Alice is current player.");
+
+            try {
+                ChangeColor card = (ChangeColor) alice.getFirstiCardByType(ECardType.ChangeColor);
+                card.setColor(ECardColor.Blue);
+                alice.playCard(game, alice.getFirstiCardByType(ECardType.ChangeColor));
+                System.out.println("Alice play a Change Color and set Blue");
+                game.nextRound();
+                System.out.println("Alice end her round");
+            } catch (UserException e) {
+                fail("Alice couldn't play a Change Color.");
+            }
+
+            if (!game.getCurrentPlayer().equals(bob))
+                fail("Bob is not current player.");
+            System.out.println("Bob is current player.");
+
+            try {
+                bob.playCard(game, bob.getLastiCardByType(ECardType.Number));
+                System.out.println("Bob play a 7 Blue.");
+                game.nextRound();
+                System.out.println("Bob end his round.");
+            } catch (UserException e) {
+                fail("Bob couldn't play his card.");
+            }
+
+        }
+
+        @Test
+        public void IllegalMoveWithChangeColor() {
+            if (!game.getCurrentPlayer().equals(alice))
+                fail("Alice is not current player.");
+            System.out.println("Alice is current player.");
+
+            try {
+                ChangeColor card = (ChangeColor) alice.getFirstiCardByType(ECardType.ChangeColor);
+                card.setColor(ECardColor.Red);
+                alice.playCard(game, alice.getFirstiCardByType(ECardType.ChangeColor));
+                System.out.println("Alice play a Change Color and set Blue");
+                game.nextRound();
+                System.out.println("Alice end her round");
+            } catch (UserException e) {
+                fail("Alice couldn't play a Change Color.");
+            }
+
+            if (!game.getCurrentPlayer().equals(bob))
+                fail("Bob is not current player.");
+            System.out.println("Bob is current player.");
+
+            try {
+                bob.playCard(game, bob.getLastiCardByType(ECardType.Number));
+                fail("Bob play a 7 Blue.");
+            } catch (UserException e) {
+                System.out.println("Bob couldn't play his 7 Blue.");
+                game.nextRound();
+                System.out.println("Bob end his round.");
             }
 
         }

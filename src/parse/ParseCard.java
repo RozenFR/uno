@@ -53,7 +53,7 @@ public abstract class ParseCard {
         if (knowParse(str)) {
             return applyParse(str);}
         else if (getNext() != null)
-            return getNext().applyParse(str);
+            return getNext().process(str);
         else
             throw new ParseCardException("Unknown Card.");
     }

@@ -12,20 +12,33 @@ public class CardNumber implements ICard {
         setColor(color);
     }
 
+    /**
+     * Set value of card
+     * @param value Value of card
+     */
     private void setValue(int value) {
         this.value = value;
     }
 
+    /**
+     * Set Color of card
+     * @param color color of card
+     */
     private void setColor(ECardColor color) {
         this.color = color;
     }
 
+    /**
+     * Get value of card
+     * @return value of card
+     */
     public int getValue() {
         return value;
     }
 
     /**
-     * @return
+     * Get the type of card
+     * @return ECardType.Number
      */
     @Override
     public ECardType getType() {
@@ -33,7 +46,8 @@ public class CardNumber implements ICard {
     }
 
     /**
-     * @return
+     * get color of card
+     * @return Color of the card
      */
     @Override
     public ECardColor getColor() {

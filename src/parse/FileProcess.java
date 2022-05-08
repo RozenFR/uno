@@ -9,6 +9,12 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class FileProcess {
+    /**
+     * Read a file and transform each line as a card
+     * @param filename target's file path
+     * @param deck target's deck
+     * @throws IOException File is null
+     */
     public static void readFile(String filename, Deck deck) throws IOException {
         if (filename == null)
             throw new IllegalArgumentException("filename is null.");
@@ -28,11 +34,8 @@ public class FileProcess {
         ParseCard reverse = new ParseCardReverse("Card Reverse");
         ParseCard skip = new ParseCardSkip("Card Skip");
         ParseCard changeColor = new ParseCardChangeColor("Card Color Change");
-        number.setNext(skip)
-                .setNext(plusTwo)
-                .setNext(plusFour)
-                .setNext(reverse)
-                .setNext(changeColor);
+
+        number.setNext(skip).setNext(plusTwo).setNext(plusFour).setNext(reverse).setNext(changeColor);
 
 
         try {

@@ -1,43 +1,38 @@
 package cardset.card;
 
+import cardset.CardException;
+import cardset.Pile;
 import user.Game;
+import user.Player;
+import user.UserException;
 
 public class PlusTwo extends CardSpecial {
 
-    private ECardColor color;
-
     public PlusTwo(ECardColor color) {
         setColor(color);
-    }
-
-    private void setColor(ECardColor color) {
-        this.color = color;
     }
 
     /**
      * @param game
      */
     @Override
-    void setEffect(Game game) {
-        if (game.getDirection()) {
-            if (game.getRoundOfPlayer() == game.getNbPlayer()){
-                game.getDeck().giveCardToPlayerWithi(game.getPlayers().get(0), 2);
-                System.out.println(game.getPlayers().get(0).getName() + " received 4 cards.");
-            }
-            else {
-                game.getDeck().giveCardToPlayerWithi(game.getPlayers().get(game.getRoundOfPlayer() + 1), 2);
-                System.out.println(game.getPlayers().get(game.getRoundOfPlayer() + 1).getName() + " received 4 cards.");
-            }
-        } else {
-            if (game.getRoundOfPlayer() == 0){
-                game.getDeck().giveCardToPlayerWithi(game.getPlayers().get(game.getNbPlayer() - 1), 2);
-                System.out.println(game.getPlayers().get(0).getName() + " received 4 cards.");
-            }
-            else {
-                game.getDeck().giveCardToPlayerWithi(game.getPlayers().get(game.getRoundOfPlayer() + 1), 2);
-                System.out.println(game.getPlayers().get(game.getRoundOfPlayer() - 1).getName() + " received 4 cards.");
-            }
+    public void setEffect(Game game) {
+        // Exception
+        if (game == null)
+            throw new IllegalArgumentException("game is null.");
+
+        // Setup
+        Player current = game.getCurrentPlayer();
+
+        // Condition
+        if (current.getCard(ECardType.PlusTwo) != null) { // Player play a +2 but next player has a +2
+            game.setCumulCounter(game.getCumulCounter() + 1);
+        } else if (game.getCumulCounter() != 0) { // Player has played another card but counter is not 0
+            game.getDeck().giveCardToPlayerWithi(current, 2 * game.getCumulCounter());
+            game.setCumulCounter(0);
+            game.nextRound();
         }
+
     }
 
     /**
@@ -45,21 +40,13 @@ public class PlusTwo extends CardSpecial {
      */
     @Override
     public ECardType getType() {
-        return null;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public ECardColor getColor() {
-        return null;
+        return ECardType.PlusTwo;
     }
 
     @Override
     public String toString() {
         return "PlusTwo{" +
-                "color=" + color +
+                "color=" + getColor() +
                 '}';
     }
 

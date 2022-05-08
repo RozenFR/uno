@@ -12,10 +12,6 @@ public class Skip extends CardSpecial {
         setColor(color);
     }
 
-    private void setColor(ECardColor color) {
-        this.color = color;
-    }
-
     /**
      * Skip the round of a player depending if it is clockwise or anticlockwise
      */
@@ -30,14 +26,6 @@ public class Skip extends CardSpecial {
     @Override
     public ECardType getType() {
         return ECardType.Skip;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public ECardColor getColor() {
-        return color;
     }
 
     @Override
