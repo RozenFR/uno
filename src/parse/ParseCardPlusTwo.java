@@ -3,7 +3,7 @@ package parse;
 import cardset.card.ICard;
 import cardset.card.PlusTwo;
 
-public class ParseCardPlusTwo extends ParseCardSpecial {
+public class ParseCardPlusTwo extends ParseCard {
 
     public ParseCardPlusTwo(String name) {
         super(name);

@@ -13,10 +13,12 @@ public class CardNumber implements ICard {
     }
 
     /**
-     * Set value of card
+     * Set value of card : 0 to 9
      * @param value Value of card
      */
     private void setValue(int value) {
+        if (value < 0 || value > 9)
+            throw new IllegalArgumentException("value between 0 and 9");
         this.value = value;
     }
 

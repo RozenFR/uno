@@ -3,7 +3,7 @@ package parse;
 import cardset.card.ICard;
 import cardset.card.Reverse;
 
-public class ParseCardReverse extends ParseCardSpecial {
+public class ParseCardReverse extends ParseCard {
 
     public ParseCardReverse(String name) {
         super(name);

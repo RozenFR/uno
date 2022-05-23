@@ -7,6 +7,7 @@ import user.UserException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 public class Deck implements ICardSet {
 
@@ -30,7 +31,7 @@ public class Deck implements ICardSet {
 
     /**
      * Get the number of card in deck
-     * @return
+     * @return The number of card in Deck
      */
     public int getNbCard() {
         return nbCard;
@@ -90,7 +91,7 @@ public class Deck implements ICardSet {
 
     /**
      * Give a card and remove it from Deck
-     * @return
+     * @return a card from the deck
      */
     public ICard giveCard() {
         ICard card = getCards().get(0);
@@ -113,7 +114,7 @@ public class Deck implements ICardSet {
             throw new IllegalArgumentException("game is null.");
         if (player == null)
             throw new IllegalArgumentException("player is null.");
-        if (player.isHasPicked())
+        if (player.getHasPicked())
             throw new UserException("Player has already picked a card.");
         if (player.getHasPlayed())
             throw new UserException("User already played.");
@@ -124,7 +125,7 @@ public class Deck implements ICardSet {
             player.setUnoStatus(false);
 
         player.getHand().addCard(giveCard());
-        player.isHasPicked(true);
+        player.setHasPicked(true);
     }
 
     /**
@@ -179,5 +180,26 @@ public class Deck implements ICardSet {
         if (card == null)
             throw new IllegalArgumentException("card is null.");
         getCards().remove(card);
+    }
+
+    @Override
+    public String toString() {
+        return "Deck{" +
+                "nbCard=" + nbCard +
+                ", cards=" + cards +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Deck deck = (Deck) o;
+        return nbCard == deck.nbCard && Objects.equals(cards, deck.cards);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nbCard, cards);
     }
 }

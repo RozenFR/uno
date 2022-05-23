@@ -3,7 +3,7 @@ package parse;
 import cardset.card.ICard;
 import cardset.card.Skip;
 
-public class ParseCardSkip extends ParseCardSpecial {
+public class ParseCardSkip extends ParseCard {
 
     public ParseCardSkip(String name) {
         super(name);

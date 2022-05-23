@@ -12,30 +12,20 @@ public class Reverse extends CardSpecial {
     }
 
     /**
-     * @param game
+     * Set the effect of the card
      */
     @Override
-    void setEffect(Game game) {
-        game.setDirection(!game.getDirection());
+    public void setEffect() {
+        Game.setDirection(!Game.getDirection());
     }
 
     /**
-     * @return
+     * Get the type of the card
+     * @return ECardType.Reverse
      */
     @Override
     public ECardType getType() {
         return ECardType.Reverse;
     }
 
-    @Override
-    public String toString() {
-        return "Reverse{" +
-                "color=" + getColor() +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
 }

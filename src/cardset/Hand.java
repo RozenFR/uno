@@ -16,28 +16,54 @@ public class Hand implements ICardSet {
         setCards();
     }
 
+    /**
+     * Set number of card
+     * @param nbCard Number of card
+     */
     private void setNbCard(int nbCard) {
         this.nbCard = nbCard;
     }
 
+    /**
+     * Set list of cards
+     */
     private void setCards() {
         this.cards = new ArrayList<>();
     }
 
+    /**
+     * Get the number of cards in hand
+     * @return number of cards in hand
+     */
     public int getNbCard() {
         return nbCard;
     }
 
+    /**
+     * Get cards in Hand
+     * @return list of cards
+     */
     public ArrayList<ICard> getCards() {
         return cards;
     }
 
+    /**
+     * Pick a card from the game
+     * @param deck deck from the game
+     * @deprecated Manage in Deck Class
+     */
     public void takeCard(Deck deck) {
         if (deck == null)
             throw new IllegalArgumentException("deck is null.");
         getCards().add(deck.giveCard());
     }
 
+    /**
+     * Lay a card on a pile
+     * @param card card to put on pile
+     * @param pile pile from the game
+     * @deprecated Manage in Player
+     */
     public void layCard(ICard card, Pile pile) {
         if (pile == null)
             throw new IllegalArgumentException("pile is null.");
@@ -46,7 +72,8 @@ public class Hand implements ICardSet {
     }
 
     /**
-     * @param card
+     * Add a card in Hand
+     * @param card card to put in hand
      */
     @Override
     public void addCard(ICard card) {
@@ -57,7 +84,8 @@ public class Hand implements ICardSet {
     }
 
     /**
-     * @param card
+     * Remove a card from hand
+     * @param card to remove from hand
      */
     @Override
     public void removeCard(ICard card) {

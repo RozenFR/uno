@@ -13,10 +13,9 @@ public class ChangeColor extends CardSpecial {
 
     /**
      * Change the color according to player's will
-     * @param game
      */
     @Override
-    public void setEffect(Game game) {
+    public void setEffect() {
 
     }
 

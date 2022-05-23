@@ -4,7 +4,7 @@ import cardset.card.ChangeColor;
 import cardset.card.ECardColor;
 import cardset.card.ICard;
 
-public class ParseCardChangeColor extends ParseCardSpecial {
+public class ParseCardChangeColor extends ParseCard {
 
     public ParseCardChangeColor(String name) {
         super(name);

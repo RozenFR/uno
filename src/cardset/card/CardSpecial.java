@@ -9,7 +9,7 @@ public abstract class CardSpecial implements ICard {
 
     private ECardColor color;
 
-    abstract void setEffect(Game game);
+    abstract void setEffect();
 
     /**
      * Set color of the card
@@ -28,6 +28,13 @@ public abstract class CardSpecial implements ICard {
     @Override
     public ECardColor getColor() {
         return color;
+    }
+
+    @Override
+    public String toString() {
+        return "CardSpecial{" +
+                "color=" + color +
+                '}';
     }
 
     @Override

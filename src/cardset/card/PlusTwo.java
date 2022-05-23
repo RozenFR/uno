@@ -1,7 +1,5 @@
 package cardset.card;
 
-import cardset.CardException;
-import cardset.Pile;
 import user.Game;
 import user.Player;
 import user.UserException;
@@ -13,30 +11,32 @@ public class PlusTwo extends CardSpecial {
     }
 
     /**
-     * @param game
+     * Set the effect of card
      */
     @Override
-    public void setEffect(Game game) {
-        // Exception
-        if (game == null)
-            throw new IllegalArgumentException("game is null.");
+    public void setEffect() {
 
         // Setup
-        Player current = game.getCurrentPlayer();
+        Player current = Game.getCurrentPlayer();
 
         // Condition
-        if (current.getCard(ECardType.PlusTwo) != null) { // Player play a +2 but next player has a +2
-            game.setCumulCounter(game.getCumulCounter() + 1);
-        } else if (game.getCumulCounter() != 0) { // Player has played another card but counter is not 0
-            game.getDeck().giveCardToPlayerWithi(current, 2 * game.getCumulCounter());
-            game.setCumulCounter(0);
-            game.nextRound();
+        if (current.getFirstiCardByType(ECardType.PlusTwo) != null) { // Player play a +2 but next player has a +2
+            Game.setCumulCounter(Game.getCumulCounter() + 1);
+        } else if (Game.getCumulCounter() != 0) { // Player has played another card but counter is not 0
+            try {
+                Game.getCurrentPlayer().pickedCardWithi(2 * Game.getCumulCounter());
+            } catch (UserException e) {
+                throw new RuntimeException(e);
+            }
+            Game.setCumulCounter(0);
+            current.nextRound();
         }
 
     }
 
     /**
-     * @return
+     * Get the type of the card
+     * @return ECardType.PlusTwo
      */
     @Override
     public ECardType getType() {
@@ -45,9 +45,7 @@ public class PlusTwo extends CardSpecial {
 
     @Override
     public String toString() {
-        return "PlusTwo{" +
-                "color=" + getColor() +
-                '}';
+        return super.toString();
     }
 
 }

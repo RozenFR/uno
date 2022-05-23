@@ -1,10 +1,9 @@
 package parse;
 
-import cardset.card.ECardColor;
 import cardset.card.ICard;
 import cardset.card.PlusFour;
 
-public class ParseCardPlusFour extends ParseCardSpecial {
+public class ParseCardPlusFour extends ParseCard {
 
     public ParseCardPlusFour(String name) {
         super(name);
@@ -20,6 +19,6 @@ public class ParseCardPlusFour extends ParseCardSpecial {
         if (str == null || str.isEmpty())
             throw new IllegalArgumentException("str is null or empty.");
         String[] prstr = str.split(";");
-        return new PlusFour(ECardColor.None);
+        return new PlusFour();
     }
 }

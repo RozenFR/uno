@@ -2,32 +2,36 @@ package cardset.card;
 
 import user.Game;
 import user.Player;
-
-import java.util.Scanner;
+import user.UserException;
 
 public class PlusFour extends CardSpecial {
 
-    public PlusFour(ECardColor color) {
+    public PlusFour() {
         setColor(ECardColor.None);
+    }
+
+    public PlusFour(ECardColor color) {
+        setColor(color);
     }
 
     /**
      * Set the effect of a plus four card
-     * @param game game currently playing
      */
     @Override
-    void setEffect(Game game) {
-        if (game == null)
-            throw new IllegalArgumentException("game is null.");
+    public void setEffect() {
 
         // Setup
-        Player current = game.getCurrentPlayer();
+        Player current = Game.getCurrentPlayer();
 
         // Condition
-        if (game.getCumulCounter() != 0) { // Player has played another card but counter is not 0
-            game.getDeck().giveCardToPlayerWithi(current, 4);
-            game.setCumulCounter(0);
-            game.nextRound();
+        if (Game.getCumulCounter() != 0) { // Player has played another card but counter is not 0
+            try {
+                current.pickedCardWithi(4);
+            } catch (UserException e) {
+                throw new RuntimeException(e);
+            }
+            Game.setCumulCounter(0);
+            Game.getCurrentPlayer().nextRound();
         }
     }
 
@@ -35,8 +39,9 @@ public class PlusFour extends CardSpecial {
      * Get the card type
      * @return ECardType.PlusFour
      */
-    @Override
     public ECardType getType() {
         return ECardType.PlusFour;
     }
+
+
 }

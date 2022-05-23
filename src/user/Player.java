@@ -4,6 +4,7 @@ import cardset.CardException;
 import cardset.Hand;
 import cardset.Pile;
 import cardset.card.*;
+import cardset.playcard.*;
 
 import java.util.Objects;
 
@@ -73,11 +74,11 @@ public class Player {
         return this.hasPlayed;
     }
 
-    public void isHasPicked(boolean hasPicked) {
+    public void setHasPicked(boolean hasPicked) {
         this.hasPicked = hasPicked;
     }
 
-    public boolean isHasPicked() {
+    public boolean getHasPicked() {
         return this.hasPicked;
     }
 
@@ -97,15 +98,6 @@ public class Player {
                 return true;
         }
         return false;
-    }
-
-    public ICard getCard(ECardType type) {
-        if (type == null)
-            throw new IllegalArgumentException("type is null");
-        for (ICard card : getHand().getCards())
-            if (card.getType() == type)
-                return card;
-        return null;
     }
 
     public ICard getiCard(int i) {
@@ -142,129 +134,60 @@ public class Player {
     }
 
     /**
+     * Give a card to the player
+     */
+    public void pickedCard() throws UserException {
+
+        if (!Game.getCurrentPlayer().equals(this))
+            throw new UserException(this.getName() + "can't picked a card.");
+        if (this.isUnoStatus())
+            this.setUnoStatus(false);
+        if (hasPicked)
+            throw new UserException(getName() + " already took a card.");
+
+        this.getHand().addCard(Game.getDeck().giveCard());
+    }
+
+    /**
+     * Give a number of card to the player
+     * @param i number of cards given
+     */
+    public void pickedCardWithi(int i) throws UserException {
+
+        if (i < 1)
+            throw new IllegalArgumentException("i is inferior to 1.");
+        if (!Game.getCurrentPlayer().equals(this))
+            throw new UserException(this.getName() + "can't picked a card.");
+        if (this.isUnoStatus())
+            this.setUnoStatus(false);
+
+        for (int j = 0; j < i; j++) {
+            this.getHand().addCard(Game.getDeck().giveCard());
+        }
+    }
+
+    /**
      * Play a card in a game
-     * @throws IllegalArgumentException game is null
-     * @throws IllegalArgumentException card is null
-     * @throws IllegalArgumentException pile is null
-     * @throws UserException player don't have card (exception for CardNumber[-1, None])
-     * @throws UserException Not the round of current player
-     * @throws UserException Player already played
-     * @param game game where we need to play the card
      * @param card card played
      */
-    public void playCard(Game game, ICard card) throws UserException {
-        Pile pile = game.getPile();
+    public void playCard(ICard card) throws CardException, UserException {
 
-        // Exception
-        if (game == null)
-            throw new IllegalArgumentException("game is null.");
-        if (card == null)
-            throw new IllegalArgumentException("card is null.");
-        if (pile == null)
-            throw new IllegalArgumentException("pile is null.");
-        if (!hasCard(card) && !card.equals(new CardNumber(-1, ECardColor.None)))
-            throw new UserException("Player don't have this card.");
-        if (!game.getPlayers().get(game.getRoundOfPlayer()).equals(this))
-            throw new UserException("Player try to play a card when not its turn.");
         if (hasPlayed)
-            throw new UserException("User Already played.");
+            throw new UserException(getName() + " already played.");
 
-        // Setup
-        ICard topCard;
-        try {
-            topCard = game.getPile().getTopCard();
-        } catch (CardException e) {
-            throw new RuntimeException(e);
-        }
+        // CoR to play card
+        PlayCard number = new PlayCardNumber("Card Number");
+        PlayCard changeColor = new PlayCardChangeColor("Card Change Color");
+        PlayCard skip = new PlayCardSkip("Card Skip");
+        PlayCard plusTwo = new PlayCardPlusTwo("Card Plus Two");
 
+        // setup
+        number.setNext(changeColor).setNext(skip).setNext(plusTwo);
 
-        // Condition
+        number.process(card);
 
-        // Condition card with cumulation non equals to 0 and card non cumulable
-        if (game.getCumulCounter() != 0 && card.getType() !=  topCard.getType()) {
-            try {
-                ICard icard = game.getPile().getTopCard();
-                switch (icard.getType()) {
-                    case PlusTwo :
-                        PlusTwo plusTwo = (PlusTwo) icard;
-                        plusTwo.setEffect(game);
-                        break;
-                    default:
-                        break;
-                }
-            } catch (CardException e) {
-                throw new RuntimeException(e);
-            }
-            setHasPlayed(true);
-        }
-
-        // Player didn't play
-        if (!hasPlayed) {
-            // Verify pile start if pile don't have any card just add card
-            if (pile.getNbCard() == 0) {
-                pile.addCard(card);
-                getHand().removeCard(card);
-            } else {
-                switch (card.getType()) {
-                    case Number :
-                        CardNumber number = (CardNumber) card;
-                        switch (topCard.getType()) {
-                            case Number :
-                                CardNumber numberPile = (CardNumber) topCard;
-                                if (numberPile.getValue() != number.getValue() && numberPile.getColor() != number.getColor())
-                                    throw new UserException("Number : Play a number different color and value.");
-                                break;
-                            case Skip:
-                                if (topCard.getColor() != number.getColor())
-                                    throw new UserException("Skip : Play a Number with different color.");
-                                break;
-                            case ChangeColor:
-                                if (topCard.getColor() != card.getColor())
-                                    throw new UserException("ChangeColor : Play a Number with wrong color");
-                            default:
-                                break;
-                        }
-
-                        pile.addCard(number);
-                        getHand().removeCard(number);
-                        break;
-                    case Skip:
-                        Skip skip = (Skip) card;
-                        switch (topCard.getType()) {
-                            case Number :
-                                if (topCard.getColor() != skip.getColor())
-                                    throw new UserException("Number : Play a Skip different color.");
-                            default:
-                                break;
-                        }
-                        skip.setEffect(game);
-                        pile.addCard(skip);
-                        getHand().removeCard(skip);
-                        break;
-                    case PlusTwo:
-                        PlusTwo plustwo = (PlusTwo) card;
-                        switch (topCard.getType()) {
-                            case ChangeColor:
-                                if (plustwo.getColor() != topCard.getColor())
-                                    throw new UserException("ChangeColor : play +2 with wrong color");
-                                break;
-                        }
-                        plustwo.setEffect(game);
-                        pile.addCard(plustwo);
-                        getHand().removeCard(plustwo);
-                        break;
-                    case ChangeColor:
-                        ChangeColor changeColor = (ChangeColor) card;
-                        changeColor.setEffect(game);
-                        pile.addCard(changeColor);
-                        getHand().removeCard(changeColor);
-                        break;
-                    default:
-                        break;
-                }
-            }
-            setHasPlayed(true);
-        }
+        setHasPlayed(true);
+        setHasPicked(true);
     }
 
     public void uno(Game game) throws UserException {
@@ -283,6 +206,28 @@ public class Player {
             throw new UserException("Player can't counter.");
         game.getPile().retrieveCardOnTop(previous);
         game.getDeck().giveCardToPlayerWithi(previous, 2);
+    }
+
+    public void nextRound() {
+
+        int round = Game.getRoundOfPlayer();
+        int nb_player = Game.getNbPlayer();
+
+        if (Game.getDirection()) {
+            if (round == nb_player - 1)
+                Game.setRoundOfPlayer(0);
+            else
+                Game.setRoundOfPlayer(round + 1);
+        } else {
+            if (round == 0)
+                Game.setRoundOfPlayer(nb_player - 1);
+            else
+                Game.setRoundOfPlayer(round - 1);
+        }
+
+        this.setHasPlayed(false);
+        this.setHasPicked(false);
+
     }
 
     @Override
