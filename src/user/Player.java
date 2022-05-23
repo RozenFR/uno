@@ -180,6 +180,7 @@ public class Player {
         PlayCard changeColor = new PlayCardChangeColor("Card Change Color");
         PlayCard skip = new PlayCardSkip("Card Skip");
         PlayCard plusTwo = new PlayCardPlusTwo("Card Plus Two");
+        PlayCardPlusFour plusFour = new PlayCardPlusFour("Card Plus Four");
 
         // setup
         number.setNext(changeColor).setNext(skip).setNext(plusTwo);
