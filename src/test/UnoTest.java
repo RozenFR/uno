@@ -270,6 +270,7 @@ public class UnoTest {
                     alice.pickedCard();
                     fail("Alice successfully picked a card.");
                 } catch (UserException e) {
+                    System.out.println("Alice didn't picked a card.");
                     /* Alice possède 2 cartes */
                     if (alice.getNbCard() != 2)
                         fail("Alice don't have 2 cards.");
