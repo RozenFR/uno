@@ -42,7 +42,7 @@ public class PlayCardPlusTwo extends PlayCard {
      * @param card
      */
     @Override
-    void topcardIsPlusTwo(PlusTwo topcard, ICard card) {
+    void topcardIsPlusTwo(PlusTwo topcard, ICard card) throws UserException {
         PlusTwo pt = (PlusTwo) card;
         pt.setEffect();
         Game.getPile().addCard(pt);
@@ -69,6 +69,9 @@ public class PlayCardPlusTwo extends PlayCard {
         if (topcard.getColor() != pt.getColor())
             throw new UserException(Game.getCurrentPlayer().toString() + " played a " + card.toString()
                     + " on top of " + topcard.toString());
+
+        if (Game.getCumulCounter() != 0)
+            throw new UserException("Player must play his +2");
         pt.setEffect();
         Game.getPile().addCard(pt);
         Game.getCurrentPlayer().getHand().removeCard(pt);
@@ -85,6 +88,9 @@ public class PlayCardPlusTwo extends PlayCard {
         if (topcard.getColor() != pt.getColor())
             throw new UserException(Game.getCurrentPlayer().toString() + " played a " + card.toString()
                     + " on top of " + topcard.toString());
+
+        if (Game.getCumulCounter() != 0)
+            throw new UserException("Player must play his +2");
         pt.setEffect();
         Game.getPile().addCard(pt);
         Game.getCurrentPlayer().getHand().removeCard(pt);
@@ -101,6 +107,8 @@ public class PlayCardPlusTwo extends PlayCard {
         if (topcard.getColor() != pt.getColor())
             throw new UserException(Game.getCurrentPlayer().toString() + " played a " + card.toString()
                     + " on top of " + topcard.toString());
+        if (Game.getCumulCounter() != 0)
+            throw new UserException("Player must play his +2");
         pt.setEffect();
         Game.getPile().addCard(pt);
         Game.getCurrentPlayer().getHand().removeCard(pt);

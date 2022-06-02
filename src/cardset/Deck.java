@@ -65,28 +65,31 @@ public class Deck implements ICardSet {
 
     /**
      * Reload the deck with pile and shuffle it
-     * @param pile targeted pile
      */
-    public void pileToDeck(Pile pile) {
-        if (pile == null)
-            throw new IllegalArgumentException("pile is null");
-        if (pile.getCards().isEmpty())
-            throw new IllegalArgumentException("pile:cards is empty.");
+    public void pileToDeck() throws CardException {
 
-        ICard lastCard = null;
+        Pile pile = Game.getPile();
+        ICard topcard = null;
 
-        for (ICard card : pile.getCards()) {
-            lastCard = card;
-            getCards().add(card);
-            pile.getCards().remove(card);
-        }
-        getCards().remove(lastCard);
-        pile.addCard(lastCard);
         try {
-            shuffle();
+            topcard = pile.getTopCard();
         } catch (CardException e) {
             throw new RuntimeException(e);
         }
+
+        if (pile.getCards().isEmpty())
+            throw new IllegalArgumentException("pile:cards is empty.");
+        if (topcard == null)
+            throw new CardException("No topcard in pile.");
+
+        for (ICard pcard : Game.getPile().getCards()) {
+            Game.getDeck().addCard(pcard);
+            Game.getPile().removeCard(pcard);
+        }
+
+        Game.getPile().addCard(topcard);
+        Game.getDeck().removeCard(topcard);
+
     }
 
     /**
@@ -169,6 +172,7 @@ public class Deck implements ICardSet {
         if (card == null)
             throw new IllegalArgumentException("card is null.");
         getCards().add(card);
+        setNbCard(getNbCard() + 1);
     }
 
     /**
@@ -180,6 +184,7 @@ public class Deck implements ICardSet {
         if (card == null)
             throw new IllegalArgumentException("card is null.");
         getCards().remove(card);
+        setNbCard(getNbCard() - 1);
     }
 
     @Override

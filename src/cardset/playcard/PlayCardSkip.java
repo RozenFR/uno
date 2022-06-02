@@ -32,9 +32,9 @@ public class PlayCardSkip extends PlayCard {
         if (topcard.getColor() != skip.getColor())
             throw new UserException(Game.getCurrentPlayer().toString() + " played a " + card.toString()
                     + " on top of " + topcard.toString());
-        skip.setEffect();
-        Game.getPile().addCard(skip);
         Game.getCurrentPlayer().getHand().removeCard(skip);
+        Game.getPile().addCard(skip);
+        skip.setEffect();
     }
 
     /**
@@ -42,8 +42,14 @@ public class PlayCardSkip extends PlayCard {
      * @param card
      */
     @Override
-    void topcardIsPlusTwo(PlusTwo topcard, ICard card) {
-        topcard.setEffect();
+    void topcardIsPlusTwo(PlusTwo topcard, ICard card) throws UserException {
+        Skip skip = (Skip) card;
+        if (Game.getCumulCounter() != 0) {
+            topcard.setEffect();
+            throw new UserException("Player must play his +2");
+        }
+        Game.getPile().addCard(skip);
+        Game.getCurrentPlayer().getHand().removeCard(skip);
     }
 
     /**

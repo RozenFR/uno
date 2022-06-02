@@ -39,9 +39,12 @@ public class PlayCardPlusFour extends PlayCard {
      * @param card
      */
     @Override
-    void topcardIsPlusTwo(PlusTwo topcard, ICard card) {
+    void topcardIsPlusTwo(PlusTwo topcard, ICard card) throws UserException {
         PlusFour pf = (PlusFour) card;
-        pf.setEffect();
+        if (Game.getCumulCounter() != 0) {
+            topcard.setEffect();
+            throw new UserException("Player must play his +2");
+        }
         Game.getPile().addCard(pf);
         Game.getCurrentPlayer().getHand().removeCard(pf);
     }

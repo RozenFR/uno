@@ -1,7 +1,6 @@
 package cardset.card;
 
 import user.Game;
-import user.Player;
 import user.UserException;
 
 public class PlusTwo extends CardSpecial {
@@ -16,22 +15,25 @@ public class PlusTwo extends CardSpecial {
     @Override
     public void setEffect() {
 
-        // Setup
-        Player current = Game.getCurrentPlayer();
-
-        // Condition
-        if (current.getFirstiCardByType(ECardType.PlusTwo) != null) { // Player play a +2 but next player has a +2
+        /** Next player has a +2 */
+        if (Game.getNextPlayer().getFirstiCardByType(ECardType.PlusTwo) != null) {
             Game.setCumulCounter(Game.getCumulCounter() + 1);
-        } else if (Game.getCumulCounter() != 0) { // Player has played another card but counter is not 0
+        } else { /** Next Player don't have a +2 */
+
+            /* Player must take +2 card */
             try {
-                Game.getCurrentPlayer().pickedCardWithi(2 * Game.getCumulCounter());
+                Game.getNextPlayer().pickedCardWithi((Game.getCumulCounter() + 1) * 2);
             } catch (UserException e) {
                 throw new RuntimeException(e);
             }
-            Game.setCumulCounter(0);
-            current.nextRound();
-        }
 
+            /** Force next player to pass */
+            Game.getNextPlayer().setHasPlayed(true);
+            Game.getNextPlayer().setHasPicked(true);
+
+            /** Reset CumulCounter */
+            Game.setCumulCounter(0);
+        }
     }
 
     /**

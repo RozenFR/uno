@@ -1,6 +1,5 @@
 package cardset.playcard;
 
-import cardset.CardException;
 import cardset.card.*;
 import user.Game;
 import user.UserException;
@@ -42,9 +41,10 @@ public class PlayCardNumber extends PlayCard {
     @Override
     void topcardIsPlusTwo(PlusTwo topcard, ICard card) throws UserException {
         CardNumber num = (CardNumber) card;
-        if (topcard.getColor() != num.getColor())
-            throw new UserException(Game.getCurrentPlayer().toString() + " played a " + card.toString()
-                    + " on top of " + topcard.toString());
+        if (Game.getCumulCounter() != 0) {
+            topcard.setEffect();
+            throw new UserException("Player must play his +2");
+        }
         Game.getPile().addCard(num);
         Game.getCurrentPlayer().getHand().removeCard(num);
     }

@@ -16,7 +16,7 @@ public class PlayCardChangeColor extends PlayCard {
      */
     @Override
     boolean knowCard(ICard card) {
-        if (card instanceof ChangeColor)
+        if (card instanceof ChangeColor && card.getColor() != ECardColor.None)
             return true;
         return false;
     }
@@ -38,8 +38,12 @@ public class PlayCardChangeColor extends PlayCard {
      * @param card
      */
     @Override
-    void topcardIsPlusTwo(PlusTwo topcard, ICard card) {
+    void topcardIsPlusTwo(PlusTwo topcard, ICard card) throws UserException {
         ChangeColor cc = (ChangeColor) card;
+        if (Game.getCumulCounter() != 0) {
+            topcard.setEffect();
+            throw new UserException("Player must play his +2");
+        }
         Game.getPile().addCard(cc);
         Game.getCurrentPlayer().getHand().removeCard(cc);
     }

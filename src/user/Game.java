@@ -78,6 +78,18 @@ public class Game {
     }
 
     /**
+     * get a player with his name
+     * @param name
+     * @return
+     */
+    public static Player getPlayer(String name) {
+        for (Player player : getPlayers())
+            if (player.getName() == name)
+                return player;
+        return null;
+    }
+
+    /**
      * get the player who has to play
      * @return current player
      */
@@ -91,12 +103,31 @@ public class Game {
      */
     public static Player getPreviousPlayer() {
         Player player;
-        if (direction) {
+        if (direction) { // Clockwise
             if (getRoundOfPlayer() - 1 < 0)
                 player = getPlayers().get(getNbPlayer() - 1);
             else
                 player = getPlayers().get(getRoundOfPlayer() - 1);
-        } else {
+        } else { // Anti-Clockwise
+            if (getRoundOfPlayer() + 1 > getNbPlayer() - 1)
+                player = getPlayers().get(0);
+            else
+                player = getPlayers().get(getRoundOfPlayer() + 1);
+        }
+        return player;
+    }
+    /**
+     * Get the previous player
+     * @return previous player
+     */
+    public static Player getNextPlayer() {
+        Player player;
+        if (!direction) { // Anticlockwise
+            if (getRoundOfPlayer() - 1 < 0)
+                player = getPlayers().get(getNbPlayer() - 1);
+            else
+                player = getPlayers().get(getRoundOfPlayer() - 1);
+        } else { // Clockwise
             if (getRoundOfPlayer() + 1 > getNbPlayer() - 1)
                 player = getPlayers().get(0);
             else
@@ -131,7 +162,7 @@ public class Game {
     }
 
     /**
-     * is deck empty ?
+     * is deck empty ? No use
      * @return true if deck don't have any cards
      */
     public boolean deckIsEmpty() {

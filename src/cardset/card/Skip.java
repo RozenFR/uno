@@ -2,8 +2,6 @@ package cardset.card;
 
 import user.Game;
 
-import java.util.Objects;
-
 public class Skip extends CardSpecial {
 
     public Skip(ECardColor color) {
@@ -15,7 +13,10 @@ public class Skip extends CardSpecial {
      */
     @Override
     public void setEffect() {
-        Game.getCurrentPlayer().nextRound();
+
+        Game.getCurrentPlayer().setHasPicked(true);
+        Game.getCurrentPlayer().setHasPlayed(true);
+
     }
 
     /**

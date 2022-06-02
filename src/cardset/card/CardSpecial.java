@@ -9,7 +9,7 @@ public abstract class CardSpecial implements ICard {
 
     private ECardColor color;
 
-    abstract void setEffect();
+    public abstract void setEffect();
 
     /**
      * Set color of the card

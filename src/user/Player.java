@@ -2,8 +2,8 @@ package user;
 
 import cardset.CardException;
 import cardset.Hand;
-import cardset.Pile;
-import cardset.card.*;
+import cardset.card.ECardType;
+import cardset.card.ICard;
 import cardset.playcard.*;
 
 import java.util.Objects;
@@ -42,54 +42,106 @@ public class Player {
         return name;
     }
 
+    /**
+     * set Victory
+     * @param victory
+     */
     private void setVictory(int victory) {
         this.victory = victory;
     }
 
+    /**
+     * get Victory
+     * @return
+     */
     public int getVictory() {
         return victory;
     }
 
+    /**
+     * set empty Hand
+     */
     private void setHand() {
         this.hand = new Hand();
     }
 
+    /**
+     * get Hand
+     * @return
+     */
     public Hand getHand() {
         return hand;
     }
 
+    /**
+     * get Number of card in hand
+     * @return number of card in hand
+     */
     public int getNbCard() {
         return hand.getNbCard();
     }
 
+    /**
+     * add victory
+     * # actually no use because application is single win = single application
+     */
     public void addVictory() {
         setVictory(getVictory() + 1);
     }
 
+    /**
+     * set hasPlayed
+     * @param hasPlayed
+     */
     public void setHasPlayed(boolean hasPlayed) {
         this.hasPlayed = hasPlayed;
     }
 
+    /**
+     * get hasPlayed
+     * @return
+     */
     public boolean getHasPlayed() {
         return this.hasPlayed;
     }
 
+    /**
+     * set hasPicked
+     * @param hasPicked
+     */
     public void setHasPicked(boolean hasPicked) {
         this.hasPicked = hasPicked;
     }
 
+    /**
+     * get hasPicked
+     * @return
+     */
     public boolean getHasPicked() {
         return this.hasPicked;
     }
 
+    /**
+     * set Uno Status
+     * @param unoStatus
+     */
     public void setUnoStatus(boolean unoStatus) {
         this.unoStatus = unoStatus;
     }
 
+    /**
+     * is Uno Status
+     * @return
+     */
     public boolean isUnoStatus() {
         return this.unoStatus;
     }
 
+    /**
+     * If player has a specific card
+     * @param card
+     * @return
+     */
     public boolean hasCard(ICard card) {
         if (card == null)
             throw new IllegalArgumentException("card is null");
@@ -100,6 +152,11 @@ public class Player {
         return false;
     }
 
+    /**
+     * Get card from hand with specific index
+     * @param i index
+     * @return
+     */
     public ICard getiCard(int i) {
         if (getHand().getCards().size() - 1 > i && i < 0)
             throw new IllegalArgumentException("i out of range.");
@@ -139,13 +196,23 @@ public class Player {
     public void pickedCard() throws UserException {
 
         if (!Game.getCurrentPlayer().equals(this))
-            throw new UserException(this.getName() + "can't picked a card.");
+            throw new UserException(this.getName() + " can't picked a card.");
         if (this.isUnoStatus())
             this.setUnoStatus(false);
         if (hasPicked)
             throw new UserException(getName() + " already took a card.");
+        /* Reset deck */
+        if (Game.getDeck().getNbCard() < 2) {
+            try {
+                Game.getDeck().pileToDeck();
+            } catch (CardException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         this.getHand().addCard(Game.getDeck().giveCard());
+
+        setHasPicked(true);
     }
 
     /**
@@ -156,10 +223,17 @@ public class Player {
 
         if (i < 1)
             throw new IllegalArgumentException("i is inferior to 1.");
-        if (!Game.getCurrentPlayer().equals(this))
-            throw new UserException(this.getName() + "can't picked a card.");
         if (this.isUnoStatus())
             this.setUnoStatus(false);
+
+        /* Reset Deck */
+        if (Game.getDeck().getNbCard() < i) {
+            try {
+                Game.getDeck().pileToDeck();
+            } catch (CardException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         for (int j = 0; j < i; j++) {
             this.getHand().addCard(Game.getDeck().giveCard());
@@ -175,6 +249,9 @@ public class Player {
         if (hasPlayed)
             throw new UserException(getName() + " already played.");
 
+        if (Game.getDeck().getNbCard() < 4)
+            Game.getDeck().pileToDeck();
+
         // CoR to play card
         PlayCard number = new PlayCardNumber("Card Number");
         PlayCard changeColor = new PlayCardChangeColor("Card Change Color");
@@ -182,31 +259,35 @@ public class Player {
         PlayCard plusTwo = new PlayCardPlusTwo("Card Plus Two");
         PlayCardPlusFour plusFour = new PlayCardPlusFour("Card Plus Four");
 
-        // setup
+        // setup CoR
         number.setNext(changeColor).setNext(skip).setNext(plusTwo);
 
+        /* CoR play card */
         number.process(card);
 
         setHasPlayed(true);
         setHasPicked(true);
     }
 
-    public void uno(Game game) throws UserException {
-        if (!game.getCurrentPlayer().equals(this)) {
-            game.getDeck().giveCardToPlayerWithi(this, 2);
-            throw new UserException("User can't Uno, not current player.");
+    public void uno() throws UserException {
+        if (!Game.getCurrentPlayer().equals(this)) {
+            Game.getDeck().giveCardToPlayerWithi(this, 2);
+            throw new UserException(getName() + " can't Uno, not current player. Player is punished.");
         }
         if (getNbCard() != 1)
-            throw new UserException("User can't Uno.");
+            throw new UserException(getName() + " can't Uno.");
+        if (!hasPlayed)
+            throw new UserException(getName() + "can't uno because didn't play a card.");
+
         setUnoStatus(true);
     }
 
-    public void counterUno(Game game) throws UserException {
-        Player previous = game.getPreviousPlayer();
+    public void counterUno() throws UserException {
+        Player previous = Game.getPreviousPlayer();
         if (previous.isUnoStatus())
             throw new UserException("Player can't counter.");
-        game.getPile().retrieveCardOnTop(previous);
-        game.getDeck().giveCardToPlayerWithi(previous, 2);
+        Game.getPile().retrieveCardOnTop(previous);
+        previous.pickedCardWithi(2);
     }
 
     public void nextRound() {
@@ -214,18 +295,19 @@ public class Player {
         int round = Game.getRoundOfPlayer();
         int nb_player = Game.getNbPlayer();
 
-        if (Game.getDirection()) {
+        if (Game.getDirection()) { // Clockwise
             if (round == nb_player - 1)
                 Game.setRoundOfPlayer(0);
             else
                 Game.setRoundOfPlayer(round + 1);
-        } else {
+        } else { // Anticlockwise
             if (round == 0)
                 Game.setRoundOfPlayer(nb_player - 1);
             else
                 Game.setRoundOfPlayer(round - 1);
         }
 
+        /* Reset player played and picked */
         this.setHasPlayed(false);
         this.setHasPicked(false);
 

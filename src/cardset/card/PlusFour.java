@@ -31,6 +31,7 @@ public class PlusFour extends CardSpecial {
                 throw new RuntimeException(e);
             }
             Game.setCumulCounter(0);
+
             Game.getCurrentPlayer().nextRound();
         }
     }
